@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { useStore } from './store';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import './App.css';
 
 const API_URL = 'https://gemc-backend-svc-788103249888.us-east4.run.app/generate';
@@ -47,7 +51,31 @@ function App() {
       <div className="chat-container">
         {messages.map((msg, index) => (
           <div key={index} className={`message ${msg.role}`}>
-            <pre style={{ whiteSpace: 'pre-wrap', margin: 0 }}>{msg.text}</pre>
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                code(props) {
+                  const { children, className, ...rest } = props;
+                  const match = /language-(\w+)/.exec(className || '');
+                  return match ? (
+                    <SyntaxHighlighter
+                      {...rest}
+                      style={vscDarkPlus}
+                      language={match[1]}
+                      PreTag="div"
+                    >
+                      {String(children).replace(/\n$/, '')}
+                    </SyntaxHighlighter>
+                  ) : (
+                    <code {...rest} className={className}>
+                      {children}
+                    </code>
+                  );
+                },
+              }}
+            >
+              {msg.text}
+            </ReactMarkdown>
           </div>
         ))}
       </div>
