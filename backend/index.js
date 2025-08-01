@@ -1,8 +1,10 @@
 const express = require('express');
+const cors = require('cors');
 const { VertexAI } = require('@google-cloud/vertexai');
 const { SecretManagerServiceClient } = require('@google-cloud/secret-manager');
 
 const app = express();
+app.use(cors());
 app.use(express.json()); // Middleware to parse JSON bodies
 
 const port = process.env.PORT || 8080;
